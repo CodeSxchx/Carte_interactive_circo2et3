@@ -1426,7 +1426,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument(
         "--force-pct-col",
         default="",
-        help="Force le nom de la colonne % (optionnel, appliqué à tous les CSV).",
+        help="Force le nom de la colonne pourcentage (optionnel, appliqué à tous les CSV).",
     )
     parser.add_argument(
         "--force-candidat-col",
