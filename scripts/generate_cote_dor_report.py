@@ -855,7 +855,8 @@ def build_html(
             )
         )
 
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    # Intentionally not displayed in UI (avoid noisy timestamps).
+    # now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     def _tour_key(t: str | None) -> str:
         return t or ""
@@ -1213,10 +1214,8 @@ def build_html(
     parts.append("</head><body>")
     parts.append("<div id=\"map-view\">")
     parts.append("<header id=\"carte\">")
-    parts.append("<h1>Côte-d'Or (21) — Carte cliquable + fiches communes</h1>")
-    parts.append(
-        f"<div class=\"sub\">Généré le {html.escape(now)}. Clique une commune ou choisis dans la liste.</div>"
-    )
+    parts.append("<h1>Côte-d'Or (21) — Résultats par commune</h1>")
+    parts.append("<div class=\"sub\">Clique une commune sur la carte ou sélectionne-la dans la liste.</div>")
     parts.append("</header>")
 
     parts.append("<div class=\"page\">")
