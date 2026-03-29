@@ -1121,7 +1121,7 @@ def build_html(
         ".pill.c2{background:#5bbcff;border-color:#2ea8ff;color:#00324f;}"
         ".pill.both{background:#b388ff;border-color:#9a66ff;color:#2a0a5a;}"
         ".pill.gray{background:#f4f4f4;border-color:#dddddd;color:#333;}"
-        "svg{width:100%;height:auto;border:1px solid var(--border);border-radius:18px;background:radial-gradient(1200px 800px at 15% 20%,#ffffff,#f8fafc 60%,#f1f5f9);box-shadow:var(--shadow2);}"
+        "svg{display:block;width:100%;height:auto;max-height:72vh;border:1px solid var(--border);border-radius:18px;background:radial-gradient(1200px 800px at 15% 20%,#ffffff,#f8fafc 60%,#f1f5f9);box-shadow:var(--shadow2);}"
         ".commune{fill:#f4f4f4;stroke:rgba(100,116,139,.55);stroke-width:0.7;}"
         ".commune.selected{stroke-width:1.0;}"
         ".commune.selected.circo3{fill:#ffd54a;stroke:#8a6b00;}"
@@ -1131,7 +1131,10 @@ def build_html(
         ".commune-link:hover .commune.selected.circo3{fill:#ffbf00;}"
         ".commune-link:hover .commune.selected.circo2{fill:#2ea8ff;}"
         ".commune-link:hover .commune.selected.both{fill:#9a66ff;}"
-        ".toc{margin-top:12px;font-size:12px;max-height:540px;overflow:auto;border-top:1px dashed rgba(2,6,23,.12);padding-top:12px;}"
+        ".toc{margin-top:12px;font-size:12px;border-top:1px dashed rgba(2,6,23,.12);padding-top:10px;}"
+        ".toc summary{cursor:pointer;list-style:none;font-weight:700;color:#334155;user-select:none;}"
+        ".toc summary::-webkit-details-marker{display:none;}"
+        ".toc .list{margin-top:10px;max-height:460px;overflow:auto;}"
         ".toc a{color:var(--primary);text-decoration:none;}"
         ".toc a:hover{text-decoration:underline;}"
         "section.commune-page{page-break-before:always;}"
@@ -1172,10 +1175,12 @@ def build_html(
         "@media (max-width: 860px){"
         "header{padding:16px 14px;}"
         ".page{padding:14px 14px;}"
-        ".map-wrap{grid-template-columns:1fr;}"
+        ".map-wrap{grid-template-columns:1fr;gap:12px;}"
         ".legend{border-radius:16px;}"
         "svg{border-radius:16px;}"
-        ".toc{max-height:260px;}"
+        "svg{max-height:58vh;}"
+        ".legend ul{columns:2;column-gap:14px;}"
+        ".toc .list{max-height:260px;}"
         ".viewer-bar{padding:10px 12px;}"
         ".viewer-bar .inner{gap:8px;}"
         ".select{min-width:unset;width:100%;}"
@@ -1199,7 +1204,8 @@ def build_html(
         "#map-view{display:block !important;}"
         "#viewer{display:block !important;}"
         "section.commune-page{display:block !important;}"
-        "svg{border:1px solid #ddd;background:#fff;box-shadow:none;}"
+        "svg{max-height:none;border:1px solid #ddd;background:#fff;box-shadow:none;}"
+        ".toc .list{max-height:none;overflow:visible;}"
         "a{color:inherit;text-decoration:none;}"
         "}"
         "</style>"
@@ -1232,8 +1238,9 @@ def build_html(
     parts.append("<li><span class=\"pill both\">Commune partagée</span> (ex: Dijon)</li>")
     parts.append("<li><span class=\"pill gray\">Autres</span> = non cliquables</li>")
     parts.append("</ul>")
-    parts.append("<div class=\"toc\">")
-    parts.append("<div class=\"muted\">Communes cliquables :</div>")
+    parts.append("<details class=\"toc\" id=\"tocDetails\" open>")
+    parts.append(f"<summary>Communes ({len(selected_pages)})</summary>")
+    parts.append("<div class=\"list\">")
     if not selected_pages:
         parts.append(
             "<p class=\"muted\">Aucune commune cliquable (pas de sélection et/ou pas de résultats CSV chargés).</p>"
@@ -1244,11 +1251,10 @@ def build_html(
     else:
         parts.append("<ul>")
         for p in selected_pages:
-            parts.append(
-                f"<li><a href=\"#{html.escape(p.page_id)}\">{html.escape(p.label)}</a></li>"
-            )
+            parts.append(f"<li><a href=\"#{html.escape(p.page_id)}\">{html.escape(p.label)}</a></li>")
         parts.append("</ul>")
     parts.append("</div>")
+    parts.append("</details>")
     parts.append("</aside>")
     parts.append("</div>")
     parts.append("</div>")
@@ -1369,6 +1375,10 @@ def build_html(
     parts.append("function showCommune(id){sections.forEach(s=>s.classList.toggle('active', s.id===id)); if(mapView) mapView.style.display='none'; if(viewer) viewer.style.display='block'; if(select) select.value=id; window.scrollTo(0,0);}")
     parts.append("function onHash(){const h=(location.hash||'').replace('#',''); if(h && h.startsWith('commune-') && ids.includes(h)){showCommune(h);} else {showMap();}}")
     parts.append("fillSelect();")
+    parts.append("const toc=document.getElementById('tocDetails');")
+    parts.append("function syncToc(){if(!toc) return; if(window.matchMedia('(max-width: 860px)').matches){toc.removeAttribute('open');} else {toc.setAttribute('open','');}}")
+    parts.append("window.addEventListener('resize', syncToc);")
+    parts.append("syncToc();")
     parts.append("if(select){select.addEventListener('change', ()=>{const v=select.value; location.hash=(v==='carte'?'#carte':'#'+v);});}")
     parts.append("window.addEventListener('hashchange', onHash);")
     parts.append("onHash();")
