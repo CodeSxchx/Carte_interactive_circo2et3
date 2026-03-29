@@ -1,0 +1,6 @@
+[build]
+  command = "python scripts/generate_cote_dor_report.py --municipales-layout per_commune --out dist/index.html"
+  publish = "dist"
+
+# Optionnel : si Netlify ne détecte pas Python automatiquement, définis la version
+# dans l'UI Netlify (Build & deploy → Environment → PYTHON_VERSION=3.12)
